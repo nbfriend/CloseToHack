@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 22
@@ -25,5 +26,8 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
     compile 'com.amazonaws:aws-android-sdk-ddb:2.+'
     compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.+'
+    compile 'com.amazonaws:aws-android-sdk-lambda:2.2.+'
     compile 'com.google.android.gms:play-services:7.5.0'
+
+
 }
