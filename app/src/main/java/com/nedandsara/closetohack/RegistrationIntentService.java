@@ -7,11 +7,19 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.model.CreatePlatformEndpointRequest;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -72,7 +80,23 @@ public class RegistrationIntentService extends IntentService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // Add custom implementation, as needed.
+        // Initialize the Amazon Cognito credentials provider to log into AWS
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                MainActivity.activity, // Context
+                "us-east-1:b1cdf9f9-d80d-4cfe-a032-9d1146f0d164", // Identity Pool ID
+                Regions.US_EAST_1 // Region
+        );
+
+        //    new AlertDialog.Builder(activity).setMessage("PRE - SNS: " + Calendar.getInstance().getTimeInMillis()).create().show();
+
+        // Register with notification service
+        AmazonSNSClient sns = new AmazonSNSClient(credentialsProvider);
+        CreatePlatformEndpointRequest request = new CreatePlatformEndpointRequest();
+        request.setPlatformApplicationArn("arn:aws:sns:us-east-1:281324986001:app/GCM/CloseToHack"); //AIzaSyASIeqQOZ7tFQnHxLMYO7VUX5dci1iOpDQ
+        request.setToken(token);
+        sns.createPlatformEndpoint(request);
+
+        //  new AlertDialog.Builder(activity).setMessage("POST - SNS: " + Calendar.getInstance().getTimeInMillis()).create().show();
     }
 
     /**
